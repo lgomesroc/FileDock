@@ -24,9 +24,11 @@ O projeto tem como objetivo praticar uma aplicação web corporativa utilizando 
 O FileDock utiliza:
 
 - Spring Boot para a aplicação
+- Spring Web MVC para a camada web
 - Spring Data JPA para persistência
 - PostgreSQL como banco de dados
 - Flyway para versionamento do schema
+- Spring Batch para processamento de documentos
 - WAR para empacotamento da aplicação
 - Apache Tomcat externo como servidor de aplicação
 - Docker para padronização do ambiente
@@ -39,7 +41,29 @@ A configuração utiliza variáveis de ambiente para banco, usuário e senha.
 
 O schema do banco é versionado através do Flyway.
 
-A primeira migration cria a tabela `documents`.
+As migrations atuais são:
+
+- `V1__create_documents_table.sql` — criação da tabela `documents`
+- `V2__add_document_processing_status.sql` — adição do status e da data de processamento dos documentos
+
+A tabela `documents` possui, entre outros dados, o status de processamento do documento:
+
+- `PENDING`
+- `PROCESSED`
+
+## Spring Batch
+
+O projeto utiliza Spring Batch para estruturar o processamento dos documentos pendentes.
+
+O fluxo implementado possui:
+
+- `RepositoryItemReader` para buscar documentos com status `PENDING`
+- `ItemProcessor` para atualizar o status do documento
+- `JpaItemWriter` para persistir as alterações
+- `Job` para representar o processamento
+- `Step` para definir o fluxo de processamento
+
+Durante o processamento, o documento passa de `PENDING` para `PROCESSED` e recebe a data de processamento.
 
 ## Tomcat externo
 
@@ -111,6 +135,20 @@ O Docker Compose inicia:
 
 O Tomcat utiliza o WAR gerado pelo Maven e se conecta ao PostgreSQL através da rede interna do Docker Compose.
 
+### Executando os testes
+
+No Windows:
+
+```powershell
+.\mvnw.cmd clean test
+```
+
+No Linux:
+
+```bash
+./mvnw clean test
+```
+
 ### Parando o ambiente
 
 ```bash
@@ -128,8 +166,19 @@ O projeto está em desenvolvimento.
 - [x] Projeto Spring Boot
 - [x] Java 21
 - [x] PostgreSQL
+- [x] Spring Web MVC
 - [x] Spring Data JPA
 - [x] Flyway
+- [x] Migration da tabela `documents`
+- [x] Migration de status de processamento
+- [x] Entidade `Document`
+- [x] `DocumentRepository`
+- [x] Spring Batch
+- [x] `RepositoryItemReader`
+- [x] `ItemProcessor`
+- [x] `JpaItemWriter`
+- [x] Job de processamento de documentos
+- [x] Step de processamento de documentos
 - [x] Empacotamento WAR
 - [x] SpringBootServletInitializer
 - [x] Apache Tomcat externo
@@ -137,6 +186,7 @@ O projeto está em desenvolvimento.
 - [x] Docker Compose
 - [x] Deploy do WAR no Tomcat
 - [x] Comunicação entre aplicação e PostgreSQL
+- [x] Testes automatizados do contexto da aplicação
 
 ### Próximas etapas
 
@@ -144,11 +194,10 @@ O projeto está em desenvolvimento.
 - [ ] Validação de dados
 - [ ] Tratamento global de exceções
 - [ ] Testes unitários e de integração
-- [ ] Spring Batch
 - [ ] Documentação da API
 - [ ] Frontend Angular
 - [ ] Deploy da aplicação
 
 ## Objetivo
 
-O FileDock é um projeto de portfólio voltado à prática de desenvolvimento backend com Java e Spring, incluindo o uso de um servidor de aplicação externo e ambientes reproduzíveis com Docker.
+O FileDock é um projeto de portfólio voltado à prática de desenvolvimento backend com Java e Spring, incluindo desenvolvimento de APIs, persistência de dados, processamento em lote, uso de servidor de aplicação externo e ambientes reproduzíveis com Docker.
