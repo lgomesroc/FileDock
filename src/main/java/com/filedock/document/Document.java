@@ -55,40 +55,68 @@ public class Document {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getFileName() {
         return fileName;
     }
 
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
     public String getContentType() {
         return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     public Long getFileSize() {
         return fileSize;
     }
 
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public ProcessingStatus getProcessingStatus() {
         return processingStatus;
     }
 
-    public LocalDateTime getProcessedAt() {
-        return processedAt;
-    }
-
     public void setProcessingStatus(ProcessingStatus processingStatus) {
         this.processingStatus = processingStatus;
+    }
+
+    public LocalDateTime getProcessedAt() {
+        return processedAt;
     }
 
     public void setProcessedAt(LocalDateTime processedAt) {
