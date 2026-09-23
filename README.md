@@ -51,6 +51,50 @@ A tabela `documents` possui, entre outros dados, o status de processamento do do
 - `PENDING`
 - `PROCESSED`
 
+## API REST
+
+O projeto possui uma API REST para gerenciamento de documentos.
+
+Endpoint base:
+
+```text
+/api/documents
+```
+
+Endpoints atualmente implementados:
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/api/documents` | Lista os documentos |
+| GET | `/api/documents/{id}` | Busca um documento pelo ID |
+| POST | `/api/documents` | Cria um novo documento |
+
+A API utiliza uma camada de serviço para concentrar as regras relacionadas aos documentos e o Spring Data JPA para acesso ao banco de dados.
+
+### Tratamento de recursos não encontrados
+
+Quando um documento não é encontrado pelo ID, a aplicação lança uma exceção específica:
+
+```text
+ResourceNotFoundException
+```
+
+O tratamento é realizado globalmente através de:
+
+```text
+GlobalExceptionHandler
+```
+
+Nesse caso, a API retorna HTTP `404 Not Found`.
+
+Exemplo:
+
+```json
+{
+  "error": "Documento não encontrado: 999"
+}
+```
+
 ## Spring Batch
 
 O projeto utiliza Spring Batch para estruturar o processamento dos documentos pendentes.
@@ -179,8 +223,16 @@ O projeto está em desenvolvimento.
 - [x] `JpaItemWriter`
 - [x] Job de processamento de documentos
 - [x] Step de processamento de documentos
+- [x] API REST de documentos
+- [x] Endpoint para listagem de documentos
+- [x] Endpoint para consulta de documento por ID
+- [x] Endpoint para criação de documentos
+- [x] `DocumentService`
+- [x] `CreateDocumentRequest`
+- [x] `ResourceNotFoundException`
+- [x] Tratamento global de exceções
 - [x] Empacotamento WAR
-- [x] SpringBootServletInitializer
+- [x] `SpringBootServletInitializer`
 - [x] Apache Tomcat externo
 - [x] Docker
 - [x] Docker Compose
@@ -190,12 +242,15 @@ O projeto está em desenvolvimento.
 
 ### Próximas etapas
 
-- [ ] API REST de documentos
+- [ ] Atualização de documentos
+- [ ] Definição da estratégia de remoção/arquivamento de documentos
 - [ ] Validação de dados
-- [ ] Tratamento global de exceções
+- [ ] Tratamento de erros de validação
+- [ ] DTOs de resposta
 - [ ] Testes unitários e de integração
 - [ ] Documentação da API
 - [ ] Frontend Angular
+- [ ] Refinamento do ambiente Docker
 - [ ] Deploy da aplicação
 
 ## Objetivo
