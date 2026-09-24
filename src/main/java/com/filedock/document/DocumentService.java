@@ -1,6 +1,7 @@
 package com.filedock.document;
 
 import com.filedock.document.dto.CreateDocumentRequest;
+import com.filedock.document.dto.UpdateDocumentRequest;
 import com.filedock.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -37,5 +38,18 @@ public class DocumentService {
                                 "Documento não encontrado: " + id
                         )
                 );
+    }
+
+    public Document update(Long id, UpdateDocumentRequest request) {
+        Document document = findById(id);
+
+        document.setTitle(request.title());
+        document.setDescription(request.description());
+        document.setFileName(request.fileName());
+        document.setContentType(request.contentType());
+        document.setFileSize(request.fileSize());
+        document.setUpdatedAt(LocalDateTime.now());
+
+        return documentRepository.save(document);
     }
 }

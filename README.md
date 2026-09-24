@@ -33,6 +33,54 @@ O FileDock utiliza:
 - Apache Tomcat externo como servidor de aplicação
 - Docker para padronização do ambiente
 
+## Estrutura do projeto
+
+```
+FileDock/
+│
+├── docs/
+│   ├── architecture/
+│   ├── api/
+│   ├── database/
+│   └── deployment/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/com/filedock/
+│   │   │   ├── FileDockApplication.java
+│   │   │   ├── ServletInitializer.java
+│   │   │   ├── document/
+│   │   │   │   ├── Document.java
+│   │   │   │   ├── DocumentController.java
+│   │   │   │   ├── DocumentRepository.java
+│   │   │   │   ├── DocumentService.java
+│   │   │   │   ├── ProcessingStatus.java
+│   │   │   │   └── dto/
+│   │   │   ├── batch/
+│   │   │   └── exception/
+│   │   │
+│   │   └── resources/
+│   │       ├── db/migration/
+│   │       └── application.properties
+│   │
+│   └── test/
+│       └── java/com/filedock/
+│
+├── frontend/
+│
+├── .github/
+├── .mvn/
+├── .env.example
+├── .gitattributes
+├── .gitignore
+├── docker-compose.yml
+├── Dockerfile
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+└── README.md
+```
+
 ## Banco de dados
 
 O PostgreSQL é executado através do Docker Compose.

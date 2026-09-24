@@ -1,10 +1,13 @@
 package com.filedock.document;
 
 import com.filedock.document.dto.CreateDocumentRequest;
+import com.filedock.document.dto.UpdateDocumentRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -38,7 +41,17 @@ public class DocumentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Document create(@RequestBody CreateDocumentRequest request) {
+    public Document create(
+            @Valid @RequestBody CreateDocumentRequest request) {
+
         return documentService.create(request);
+    }
+
+    @PutMapping("/{id}")
+    public Document update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateDocumentRequest request) {
+
+        return documentService.update(id, request);
     }
 }
