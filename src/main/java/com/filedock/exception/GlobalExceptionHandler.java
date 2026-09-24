@@ -14,17 +14,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, String> handleResourceNotFound(
+    public ErrorResponse handleResourceNotFound(
             ResourceNotFoundException exception) {
 
-        return Map.of(
-                "error", exception.getMessage()
+        return new ErrorResponse(
+                exception.getMessage(),
+                null
         );
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handleValidation(
+    public ErrorResponse handleValidation(
             MethodArgumentNotValidException exception) {
 
         Map<String, String> errors = new LinkedHashMap<>();
@@ -32,13 +33,15 @@ public class GlobalExceptionHandler {
         exception.getBindingResult()
                 .getFieldErrors()
                 .forEach(error ->
-                        errors.put(error.getField(), error.getDefaultMessage())
+                        errors.put(
+                                error.getField(),
+                                error.getDefaultMessage()
+                        )
                 );
 
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("error", "Dados inválidos");
-        response.put("fields", errors);
-
-        return response;
+        return new ErrorResponse(
+                "Dados inválidos",
+                errors
+        );
     }
 }

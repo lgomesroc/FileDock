@@ -1,11 +1,13 @@
 package com.filedock.document;
 
 import com.filedock.document.dto.CreateDocumentRequest;
+import com.filedock.document.dto.DocumentResponse;
 import com.filedock.document.dto.UpdateDocumentRequest;
 import com.filedock.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class DocumentService {
@@ -16,7 +18,14 @@ public class DocumentService {
         this.documentRepository = documentRepository;
     }
 
-    public Document create(CreateDocumentRequest request) {
+    public List<DocumentResponse> findAll() {
+        return documentRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    public DocumentResponse create(CreateDocumentRequest request) {
         Document document = new Document();
 
         document.setTitle(request.title());
@@ -28,20 +37,20 @@ public class DocumentService {
         document.setUpdatedAt(LocalDateTime.now());
         document.setProcessingStatus(ProcessingStatus.PENDING);
 
-        return documentRepository.save(document);
+        return toResponse(documentRepository.save(document));
     }
 
-    public Document findById(Long id) {
-        return documentRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Documento não encontrado: " + id
-                        )
-                );
+    public DocumentResponse findById(Long id) {
+        Document document = findDocumentById(id);
+
+        return toResponse(document);
     }
 
-    public Document update(Long id, UpdateDocumentRequest request) {
-        Document document = findById(id);
+    public DocumentResponse update(
+            Long id,
+            UpdateDocumentRequest request) {
+
+        Document document = findDocumentById(id);
 
         document.setTitle(request.title());
         document.setDescription(request.description());
@@ -50,6 +59,30 @@ public class DocumentService {
         document.setFileSize(request.fileSize());
         document.setUpdatedAt(LocalDateTime.now());
 
-        return documentRepository.save(document);
+        return toResponse(documentRepository.save(document));
+    }
+
+    private Document findDocumentById(Long id) {
+        return documentRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Documento não encontrado: " + id
+                        )
+                );
+    }
+
+    private DocumentResponse toResponse(Document document) {
+        return new DocumentResponse(
+                document.getId(),
+                document.getTitle(),
+                document.getDescription(),
+                document.getFileName(),
+                document.getContentType(),
+                document.getFileSize(),
+                document.getCreatedAt(),
+                document.getUpdatedAt(),
+                document.getProcessingStatus(),
+                document.getProcessedAt()
+        );
     }
 }

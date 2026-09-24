@@ -17,6 +17,7 @@ import org.springframework.batch.infrastructure.item.database.builder.JpaItemWri
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -70,12 +71,14 @@ public class DocumentBatchConfiguration {
     @Bean
     public Step documentProcessingStep(
             JobRepository jobRepository,
+            PlatformTransactionManager transactionManager,
             RepositoryItemReader<Document> documentReader,
             ItemProcessor<Document, Document> documentProcessor,
             JpaItemWriter<Document> documentWriter) {
 
         return new StepBuilder("documentProcessingStep", jobRepository)
                 .<Document, Document>chunk(10)
+                .transactionManager(transactionManager)
                 .reader(documentReader)
                 .processor(documentProcessor)
                 .writer(documentWriter)
