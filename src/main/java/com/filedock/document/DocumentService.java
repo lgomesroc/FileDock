@@ -4,6 +4,7 @@ import com.filedock.document.dto.CreateDocumentRequest;
 import com.filedock.document.dto.DocumentResponse;
 import com.filedock.document.dto.UpdateDocumentRequest;
 import com.filedock.exception.ResourceNotFoundException;
+import com.filedock.storage.FileStorageService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,9 +14,14 @@ import java.util.List;
 public class DocumentService {
 
     private final DocumentRepository documentRepository;
+    private final FileStorageService fileStorageService;
 
-    public DocumentService(DocumentRepository documentRepository) {
+    public DocumentService(
+            DocumentRepository documentRepository,
+            FileStorageService fileStorageService) {
+
         this.documentRepository = documentRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     public List<DocumentResponse> findAll() {
@@ -79,6 +85,7 @@ public class DocumentService {
                 document.getFileName(),
                 document.getContentType(),
                 document.getFileSize(),
+                document.getStoragePath(),
                 document.getCreatedAt(),
                 document.getUpdatedAt(),
                 document.getProcessingStatus(),
