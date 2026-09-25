@@ -47,6 +47,44 @@ public class LocalFileStorageService implements FileStorageService {
         return storageLocation.relativize(targetLocation).toString();
     }
 
+    @Override
+    public Path load(String storagePath) throws IOException {
+
+        if (storagePath == null || storagePath.isBlank()) {
+            throw new IOException("Caminho do arquivo não informado.");
+        }
+
+        Path targetLocation = storageLocation.resolve(storagePath)
+                .normalize();
+
+        if (!targetLocation.startsWith(storageLocation)) {
+            throw new IOException("Caminho de armazenamento inválido.");
+        }
+
+        if (!Files.exists(targetLocation)) {
+            throw new IOException("Arquivo não encontrado.");
+        }
+
+        return targetLocation;
+    }
+
+    @Override
+    public void delete(String storagePath) throws IOException {
+
+        if (storagePath == null || storagePath.isBlank()) {
+            return;
+        }
+
+        Path targetLocation = storageLocation.resolve(storagePath)
+                .normalize();
+
+        if (!targetLocation.startsWith(storageLocation)) {
+            throw new IOException("Caminho de armazenamento inválido.");
+        }
+
+        Files.deleteIfExists(targetLocation);
+    }
+
     private String extractExtension(String fileName) {
 
         if (fileName == null || fileName.isBlank()) {
