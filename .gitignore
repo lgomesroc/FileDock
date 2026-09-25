@@ -36,3 +36,8 @@ build/
 .env
 .env.*
 !.env.example
+
+### Local test artifacts ###
+download-*.txt
+headers-*.txt
+teste-*.txt
