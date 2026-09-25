@@ -34,6 +34,9 @@ public class Document {
     @Column(name = "file_size", nullable = false)
     private Long fileSize;
 
+    @Column(name = "storage_path", length = 500)
+    private String storagePath;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -75,6 +78,14 @@ public class Document {
         this.fileName = fileName;
     }
 
+    public Long getFileSize() {
+        return fileSize;
+    }
+
+    public void setFileSize(Long fileSize) {
+        this.fileSize = fileSize;
+    }
+
     public String getContentType() {
         return contentType;
     }
@@ -83,12 +94,12 @@ public class Document {
         this.contentType = contentType;
     }
 
-    public Long getFileSize() {
-        return fileSize;
+    public String getStoragePath() {
+        return storagePath;
     }
 
-    public void setFileSize(Long fileSize) {
-        this.fileSize = fileSize;
+    public void setStoragePath(String storagePath) {
+        this.storagePath = storagePath;
     }
 
     public LocalDateTime getCreatedAt() {
