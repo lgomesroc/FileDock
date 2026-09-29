@@ -4,6 +4,8 @@ import com.filedock.document.dto.CreateDocumentRequest;
 import com.filedock.document.dto.DocumentDownload;
 import com.filedock.document.dto.DocumentResponse;
 import com.filedock.document.dto.UpdateDocumentRequest;
+import com.filedock.exception.GlobalExceptionHandler;
+import com.filedock.exception.ResourceNotFoundException;
 import com.filedock.storage.FileStorageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ByteArrayResource;
@@ -27,10 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 class DocumentControllerTest {
-
+    
     private final DocumentService documentService =
             mock(DocumentService.class);
 
@@ -43,7 +44,7 @@ class DocumentControllerTest {
                             new DocumentController(documentService)
                     )
                     .setControllerAdvice(
-                            new com.filedock.exception.GlobalExceptionHandler()
+                            new GlobalExceptionHandler()
                     )
                     .build();
 
@@ -85,14 +86,14 @@ class DocumentControllerTest {
                         post("/api/documents")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
-                                        {
-                                          "title": "Documento de teste",
-                                          "description": "Descrição",
-                                          "fileName": "teste.pdf",
-                                          "contentType": "application/pdf",
-                                          "fileSize": 1024
-                                        }
-                                        """)
+                                    {
+                                      "title": "Documento de teste",
+                                      "description": "Descrição",
+                                      "fileName": "teste.pdf",
+                                      "contentType": "application/pdf",
+                                      "fileSize": 1024
+                                    }
+                                    """)
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
@@ -147,14 +148,14 @@ class DocumentControllerTest {
                         put("/api/documents/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
-                                        {
-                                          "title": "Documento atualizado",
-                                          "description": "Nova descrição",
-                                          "fileName": "novo.pdf",
-                                          "contentType": "application/pdf",
-                                          "fileSize": 2048
-                                        }
-                                        """)
+                                    {
+                                      "title": "Documento atualizado",
+                                      "description": "Nova descrição",
+                                      "fileName": "novo.pdf",
+                                      "contentType": "application/pdf",
+                                      "fileSize": 2048
+                                    }
+                                    """)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
@@ -166,7 +167,7 @@ class DocumentControllerTest {
 
         when(documentService.findById(999L))
                 .thenThrow(
-                        new com.filedock.exception.ResourceNotFoundException(
+                        new ResourceNotFoundException(
                                 "Documento não encontrado: 999"
                         )
                 );
@@ -183,16 +184,70 @@ class DocumentControllerTest {
                         post("/api/documents")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
-                                        {
-                                          "title": "",
-                                          "description": "",
-                                          "fileName": "",
-                                          "contentType": "",
-                                          "fileSize": 0
-                                        }
-                                        """)
+                                    {
+                                      "title": "",
+                                      "description": "",
+                                      "fileName": "",
+                                      "contentType": "",
+                                      "fileSize": 0
+                                    }
+                                    """)
                 )
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenServiceThrowsIllegalArgumentException()
+            throws Exception {
+
+        when(documentService.upload(
+                eq("Documento inválido"),
+                eq("Descrição"),
+                any()
+        )).thenThrow(
+                new IllegalArgumentException(
+                        "O arquivo é obrigatório."
+                )
+        );
+
+        mockMvc.perform(
+                        multipart("/api/documents/upload")
+                                .file(
+                                        "file",
+                                        "conteudo"
+                                                .getBytes(
+                                                        StandardCharsets.UTF_8
+                                                )
+                                )
+                                .param(
+                                        "title",
+                                        "Documento inválido"
+                                )
+                                .param(
+                                        "description",
+                                        "Descrição"
+                                )
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error")
+                        .value("O arquivo é obrigatório."));
+    }
+
+    @Test
+    void shouldReturnConflictWhenServiceThrowsIllegalStateException()
+            throws Exception {
+
+        when(documentService.download(1L))
+                .thenThrow(
+                        new IllegalStateException(
+                                "Arquivo armazenado não encontrado."
+                        )
+                );
+
+        mockMvc.perform(get("/api/documents/1/download"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error")
+                        .value("Arquivo armazenado não encontrado."));
     }
 
     @Test
@@ -274,4 +329,5 @@ class DocumentControllerTest {
                 null
         );
     }
+
 }

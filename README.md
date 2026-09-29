@@ -238,6 +238,32 @@ Exemplo de resposta:
 
 Documentos inexistentes retornam HTTP `404`.
 
+### Tratamento de exceções
+
+O `GlobalExceptionHandler` centraliza o tratamento das principais exceções da API.
+
+Mapeamentos atuais:
+
+```text
+ResourceNotFoundException
+        ↓
+HTTP 404 NOT FOUND
+
+MethodArgumentNotValidException
+        ↓
+HTTP 400 BAD REQUEST
+
+IllegalArgumentException
+        ↓
+HTTP 400 BAD REQUEST
+
+IllegalStateException
+        ↓
+HTTP 409 CONFLICT
+```
+
+Dessa forma, erros esperados da aplicação possuem respostas HTTP consistentes sem utilizar um tratamento genérico que possa esconder erros de programação.
+
 ## Documentação da API
 
 A API possui documentação OpenAPI disponibilizada através do Swagger UI.
@@ -300,7 +326,7 @@ A tabela possui dados relacionados a:
 
 O Hibernate utiliza:
 
-```properties
+```text
 spring.jpa.hibernate.ddl-auto=validate
 ```
 
@@ -684,6 +710,8 @@ Os testes atuais cobrem:
 * Download de arquivos
 * Exclusão de documentos
 * Substituição de arquivos
+* `IllegalArgumentException` retornando HTTP `400`
+* `IllegalStateException` retornando HTTP `409`
 
 ### Service
 
@@ -716,7 +744,7 @@ mvnw.cmd test
 A suíte automatizada atual possui:
 
 ```text
-18 testes
+20 testes
 0 falhas
 0 erros
 0 testes ignorados
@@ -842,7 +870,6 @@ Foi confirmado que, após a substituição, o armazenamento contém o novo arqui
 
 ## Próximas funcionalidades
 
-* Tratamento específico das exceções de armazenamento na API
 * Testes adicionais para cenários de erro do armazenamento
 * Frontend Angular
 * Melhorias de observabilidade e logs
