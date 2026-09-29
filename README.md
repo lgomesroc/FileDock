@@ -161,6 +161,14 @@ retorna o arquivo físico associado ao documento.
 
 A resposta utiliza `Content-Disposition` para disponibilizar o arquivo como download.
 
+Quando o tipo MIME do documento não está disponível, a aplicação utiliza:
+
+```text
+application/octet-stream
+```
+
+como tipo de conteúdo padrão.
+
 ### Substituição de arquivo
 
 O endpoint:
@@ -722,6 +730,12 @@ Os testes atuais cobrem:
 * Substituição de arquivo de documento inexistente
 * Arquivo vazio
 * Falha no armazenamento do novo arquivo
+* Upload com arquivo vazio
+* Falha no armazenamento durante upload
+* Download sem caminho de armazenamento
+* Falha ao carregar arquivo durante download
+* Uso de `application/octet-stream` quando o tipo MIME não está disponível
+* Falha na exclusão do arquivo antigo após substituição
 
 ### Contexto
 
@@ -744,7 +758,7 @@ mvnw.cmd test
 A suíte automatizada atual possui:
 
 ```text
-20 testes
+26 testes
 0 falhas
 0 erros
 0 testes ignorados
@@ -870,12 +884,13 @@ Foi confirmado que, após a substituição, o armazenamento contém o novo arqui
 
 ## Próximas funcionalidades
 
-* Testes adicionais para cenários de erro do armazenamento
 * Frontend Angular
 * Melhorias de observabilidade e logs
 * Evolução da infraestrutura para armazenamento externo
 * Deploy em ambiente cloud
 * Melhorias de segurança e configuração para ambiente de produção
+* Limite configurável para tamanho máximo de arquivos
+* Autenticação e autorização de usuários
 
 ## Objetivo do projeto
 
